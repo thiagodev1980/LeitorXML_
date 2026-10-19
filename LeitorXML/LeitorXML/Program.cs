@@ -1,10 +1,21 @@
 ﻿using LeitorXML.LeitorXml;
-using System.ComponentModel;
 using System.Globalization;
-using System.Xml.Linq;
 using teste_xml;
 
-string pasta = @"C:\NotasFiscais";
+string pasta = @"C:\XmlNfce";
+
+Console.Write("Informe a série da NFC-e: ");
+string serie = (Console.ReadLine() ?? "").Trim();
+
+Console.Write("Informe a competência (AAAA-MM): ");
+string competencia = (Console.ReadLine() ?? "").Trim();
+
+// confere se a competência está no formato certo
+while (!DateTime.TryParseExact(competencia, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+{
+    Console.Write("Formato inválido. Digite no formato AAAA-MM (ex: 2026-09): ");
+    competencia = (Console.ReadLine() ?? "").Trim();
+}
 
 foreach (string arquivoXml in Directory.GetFiles(pasta, "*.xml"))
 {
