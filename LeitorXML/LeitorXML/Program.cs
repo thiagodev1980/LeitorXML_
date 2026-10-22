@@ -21,5 +21,12 @@ foreach (string arquivoXml in Directory.GetFiles(pasta, "*.xml"))
 {
     NotaFiscal nota = LeitorXml.Ler(arquivoXml);
 
-    Console.WriteLine($"{nota.NumeroNF} | mod {nota.Modelo} | serie {nota.Serie} | {nota.Competencia} | {nota.Valor} | cpf: {nota.CpfDest} | cnpj: {nota.CnpjDest}");
+    if (nota.Modelo == "65" && nota.Serie == serie && nota.Competencia == competencia && string.IsNullOrWhiteSpace(nota.CpfDest) && string.IsNullOrWhiteSpace(nota.CnpjDest))
+    {
+        Console.WriteLine($"SELECIONADA: {nota.Arquivo} | serie {nota.Serie} | {nota.Competencia} | {nota.Valor}");
+    }
+    else
+    {
+        Console.WriteLine($"descartada: {nota.Arquivo}");
+    }
 }
