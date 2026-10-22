@@ -35,7 +35,14 @@ namespace LeitorXML.LeitorXml
             nota.NumeroNF = ide.Element(ns + "nNF")?.Value;
             nota.Modelo = ide.Element(ns + "mod")?.Value;
             nota.Serie = ide.Element(ns + "serie")?.Value;
-            nota.Competencia = ide.Element(ns + "dhEmi")?.Value;
+
+            string dhEmi = ide.Element(ns + "dhEmi")?.Value ?? "";
+
+            if (dhEmi.Length >= 7)
+                nota.Competencia = dhEmi.Substring(0, 7);
+            else
+                nota.Competencia = "";
+
             nota.Valor = Convert.ToDecimal(total.Element(ns + "vNF")?.Value, CultureInfo.InvariantCulture);
             nota.CpfDest = dest?.Element(ns + "CPF")?.Value;
             nota.CnpjDest = dest?.Element(ns + "CNPJ")?.Value;

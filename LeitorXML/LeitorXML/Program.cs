@@ -21,5 +21,5 @@ foreach (string arquivoXml in Directory.GetFiles(pasta, "*.xml"))
 {
     NotaFiscal nota = LeitorXml.Ler(arquivoXml);
 
-    Console.WriteLine($"{nota.NumeroNF} | mod {nota.Modelo} | serie {nota.Serie} | {nota.Competencia.Substring(0, 7)} | {nota.Valor} | cpf: {nota.CpfDest} | cnpj: {nota.CnpjDest}");
+    Console.WriteLine($"{nota.NumeroNF} | mod {nota.Modelo} | serie {nota.Serie} | {nota.Competencia} | {nota.Valor} | cpf: {nota.CpfDest} | cnpj: {nota.CnpjDest}");
 }
