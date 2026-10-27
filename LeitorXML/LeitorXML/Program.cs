@@ -1,5 +1,6 @@
 ﻿using LeitorXML.LeitorXml;
 using System.Globalization;
+using System.Xml;
 using teste_xml;
 
 string pasta = @"C:\XmlNfce";
@@ -17,16 +18,59 @@ while (!DateTime.TryParseExact(competencia, "yyyy-MM", CultureInfo.InvariantCult
     competencia = (Console.ReadLine() ?? "").Trim();
 }
 
-foreach (string arquivoXml in Directory.GetFiles(pasta, "*.xml"))
-{
-    NotaFiscal nota = LeitorXml.Ler(arquivoXml);
+// tenta listar os XMLs da pasta
+string[] arquivos;
 
-    if (nota.Modelo == "65" && nota.Serie == serie && nota.Competencia == competencia && string.IsNullOrWhiteSpace(nota.CpfDest) && string.IsNullOrWhiteSpace(nota.CnpjDest))
+try
+{
+    arquivos = Directory.GetFiles(pasta, "*.xml");
+}
+catch (DirectoryNotFoundException)
+{
+    Console.WriteLine($"A pasta {pasta} não foi encontrada.");
+    return;
+}
+catch (UnauthorizedAccessException)
+{
+    Console.WriteLine($"Sem permissão para ler a pasta {pasta}.");
+    return;
+}
+
+if (arquivos.Length == 0)
+{
+    Console.WriteLine($"Nenhum arquivo .xml encontrado em {pasta}.");
+    return;
+}
+
+foreach (string arquivoXml in arquivos)
+{
+    string nomeArquivo = Path.GetFileName(arquivoXml);
+
+    try
     {
-        Console.WriteLine($"SELECIONADA: {nota.Arquivo} | serie {nota.Serie} | {nota.Competencia} | {nota.Valor}");
+        NotaFiscal nota = LeitorXml.Ler(arquivoXml);
+
+        if (nota == null)
+        {
+            Console.WriteLine($"descartada: {nomeArquivo} (não é um XML de nota fiscal)");
+            continue;
+        }
+
+        if (nota.Modelo == "65" && nota.Serie == serie && nota.Competencia == competencia && string.IsNullOrWhiteSpace(nota.CpfDest) && string.IsNullOrWhiteSpace(nota.CnpjDest))
+        {
+            Console.WriteLine($"SELECIONADA: {nota.Arquivo} | serie {nota.Serie} | {nota.Competencia} | {nota.Valor}");
+        }
+        else
+        {
+            Console.WriteLine($"descartada: {nota.Arquivo}");
+        }
     }
-    else
+    catch (XmlException)
     {
-        Console.WriteLine($"descartada: {nota.Arquivo}");
+        Console.WriteLine($"erro: {nomeArquivo} está corrompido ou não é um XML válido");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"erro ao ler {nomeArquivo}: {ex.Message}");
     }
 }
