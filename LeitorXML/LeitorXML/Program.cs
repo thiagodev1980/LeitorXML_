@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Xml;
 using teste_xml;
+using System.Text.Json;
 
 string pasta = @"C:\XmlNfce";
 
@@ -42,6 +43,9 @@ if (arquivos.Length == 0)
     return;
 }
 
+// lista que vai virar o envio.json
+List<object> envio = new List<object>();
+
 foreach (string arquivoXml in arquivos)
 {
     string nomeArquivo = Path.GetFileName(arquivoXml);
@@ -59,6 +63,8 @@ foreach (string arquivoXml in arquivos)
         if (nota.Modelo == "65" && nota.Serie == serie && nota.Competencia == competencia && string.IsNullOrWhiteSpace(nota.CpfDest) && string.IsNullOrWhiteSpace(nota.CnpjDest))
         {
             Console.WriteLine($"SELECIONADA: {nota.Arquivo} | serie {nota.Serie} | {nota.Competencia} | {nota.Valor}");
+
+            envio.Add(new { chave = nota.Chave, competencia = nota.Competencia, valor = nota.Valor });
         }
         else
         {
@@ -73,4 +79,25 @@ foreach (string arquivoXml in arquivos)
     {
         Console.WriteLine($"erro ao ler {nomeArquivo}: {ex.Message}");
     }
+}
+
+
+// grava o envio.json na mesma pasta dos XMLs
+string caminhoJson = Path.Combine(pasta, "envio.json");
+
+try
+{
+    string json = JsonSerializer.Serialize(envio, new JsonSerializerOptions { WriteIndented = true });
+    File.WriteAllText(caminhoJson, json);
+
+    Console.WriteLine();
+    Console.WriteLine($"{envio.Count} nota(s) gravada(s) em {caminhoJson}");
+}
+catch (UnauthorizedAccessException)
+{
+    Console.WriteLine($"Sem permissão para gravar o arquivo {caminhoJson}.");
+}
+catch (IOException ex)
+{
+    Console.WriteLine($"Erro ao gravar o envio.json: {ex.Message}");
 }
