@@ -1,17 +1,13 @@
-using System.Globalization;
+using System.Diagnostics;
 using System.Text.Json;
-using System.Xml;
 using LeitorXML.LeitorXml;
-using teste_xml;
-
-using System.Xml;
-using teste_xml;
-using System.Text.Json;
 
 namespace FormsXml
 {
 	public partial class Form1 : Form
 	{
+		string pasta = @"C:\XmlNfce";
+
 		public Form1()
 		{
 			InitializeComponent();
@@ -19,104 +15,89 @@ namespace FormsXml
 
 		private void btnBuscar_Click(object sender, EventArgs e)
 		{
-			string serie = txtBoxSerie.Text;
-			string competencia = txtBoxCompetencia.Text;
-			string pasta = @"C:\XmlNfce";
+			// a série vem do NumericUpDown e a competência do DateTimePicker,
+			// então o usuário não consegue digitar um valor inválido
+			string serie = numSerie.Value.ToString();
+			string competencia = dtpCompetencia.Value.ToString("yyyy-MM");
+			string caminhoJson = Path.Combine(pasta, "envio.json");
 
-			//MessageBox.Show("Serie Digitada: " + serie +
-			//				"\nCompetencia Digitada: " + competencia);
-
-			// confere se a competência está no formato certo
-			while (!DateTime.TryParseExact(competencia, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+			if (!Directory.Exists(pasta))
 			{
-				MessageBox.Show("Formato inválido. Digite no formato AAAA-MM (ex: 2026-09): ");
-				competencia = (competencia ?? "").Trim();
+				MessageBox.Show($"A pasta {pasta} não foi encontrada.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
 			}
-
-			// tenta listar os XMLs da pasta
-			string[] arquivos;
 
 			try
 			{
-				arquivos = Directory.GetFiles(pasta, "*.xml");
-			}
-			catch (DirectoryNotFoundException)
-			{
-				MessageBox.Show($"A pasta {pasta} não foi encontrada.");
-				return;
+				// apaga o envio.json anterior para não mostrar resultado velho
+				if (File.Exists(caminhoJson))
+				{
+					File.Delete(caminhoJson);
+				}
+
+				// o processador do Felipe escreve as mensagens no Console;
+				// aqui elas são guardadas para aparecer no log da tela
+				StringWriter mensagens = new StringWriter();
+				TextWriter saidaOriginal = Console.Out;
+				Console.SetOut(mensagens);
+
+				try
+				{
+					IProcessadorNfce processador = new ProcessadorNfceAutorizadas(pasta);
+					processador.Processar(serie, competencia);
+				}
+				finally
+				{
+					Console.SetOut(saidaOriginal);
+				}
+
+				txtLog.Text = mensagens.ToString();
+
+				if (!File.Exists(caminhoJson))
+				{
+					MessageBox.Show("O envio.json não foi gerado. Veja o motivo no log.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+					return;
+				}
+
+				// lê o envio.json gerado e mostra as notas na tabela
+				string json = File.ReadAllText(caminhoJson);
+				JsonSerializerOptions opcoes = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+				List<NotaEnvio> notas = JsonSerializer.Deserialize<List<NotaEnvio>>(json, opcoes) ?? new List<NotaEnvio>();
+
+				dgvSelecionadas.DataSource = notas;
+				dgvSelecionadas.Columns["Serie"].HeaderText = "Série";
+				dgvSelecionadas.Columns["Competencia"].HeaderText = "Competência";
+				dgvSelecionadas.Columns["Chave"].FillWeight = 300;
+
+				int totalArquivos = Directory.GetFiles(pasta, "*.xml").Length;
+				int descartadas = totalArquivos - notas.Count;
+
+				lblResumo.Text = $"{notas.Count} selecionada(s) · {descartadas} descartada(s) de {totalArquivos} arquivo(s)";
+				btnAbrirJson.Enabled = true;
 			}
 			catch (UnauthorizedAccessException)
 			{
-				MessageBox.Show($"Sem permissão para ler a pasta {pasta}.");
-				return;
+				MessageBox.Show($"Sem permissão para ler ou gravar na pasta {pasta}.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-
-			if (arquivos.Length == 0)
+			catch (IOException ex)
 			{
-				MessageBox.Show($"Nenhum arquivo .xml encontrado em {pasta}.");
-				return;
+				MessageBox.Show("Erro ao acessar o envio.json: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+			catch (JsonException)
+			{
+				MessageBox.Show("O envio.json gerado não pôde ser lido.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
 
-		//	// lista que vai virar o envio.json
-		//	List<object> envio = new List<object>();
+		private void btnAbrirJson_Click(object sender, EventArgs e)
+		{
+			// abre o envio.json no Bloco de Notas
+			string caminho = Path.Combine(pasta, "envio.json");
 
-		//	foreach (string arquivoXml in arquivos)
-		//	{
-		//		string nomeArquivo = Path.GetFileName(arquivoXml);
-
-		//		try
-		//		{
-		//			NotaFiscal nota = LeitorXml.Ler(arquivoXml);
-
-		//			if (nota == null)
-		//			{
-		//				Console.WriteLine($"descartada: {nomeArquivo} (não é um XML de nota fiscal)");
-		//				continue;
-		//			}
-
-		//			if (nota.Modelo == "65" && nota.Serie == serie && nota.Competencia == competencia && string.IsNullOrWhiteSpace(nota.CpfDest) && string.IsNullOrWhiteSpace(nota.CnpjDest))
-		//			{
-		//				Console.WriteLine($"SELECIONADA: {nota.Arquivo} | serie {nota.Serie} | {nota.Competencia} | {nota.Valor}");
-
-		//				envio.Add(new { chave = nota.Chave, competencia = nota.Competencia, valor = nota.Valor });
-		//			}
-		//			else
-		//			{
-		//				Console.WriteLine($"descartada: {nota.Arquivo}");
-		//			}
-		//		}
-		//		catch (XmlException)
-		//		{
-		//			Console.WriteLine($"erro: {nomeArquivo} está corrompido ou não é um XML válido");
-		//		}
-		//		catch (Exception ex)
-		//		{
-		//			Console.WriteLine($"erro ao ler {nomeArquivo}: {ex.Message}");
-		//		}
-		//	}
-
-
-		//	// grava o envio.json na mesma pasta dos XMLs
-		//	string caminhoJson = Path.Combine(pasta, "envio.json");
-
-		//	try
-		//	{
-		//		string json = JsonSerializer.Serialize(envio, new JsonSerializerOptions { WriteIndented = true });
-		//		File.WriteAllText(caminhoJson, json);
-
-		//		Console.WriteLine();
-		//		Console.WriteLine($"{envio.Count} nota(s) gravada(s) em {caminhoJson}");
-		//	}
-		//	catch (UnauthorizedAccessException)
-		//	{
-		//		Console.WriteLine($"Sem permissão para gravar o arquivo {caminhoJson}.");
-		//	}
-		//	catch (IOException ex)
-		//	{
-		//		Console.WriteLine($"Erro ao gravar o envio.json: {ex.Message}");
-		//	}
-
-
+			if (File.Exists(caminho))
+			{
+				Process.Start("notepad.exe", caminho);
+			}
 		}
 	}
 }
