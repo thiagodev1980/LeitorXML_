@@ -1,4 +1,4 @@
-﻿namespace FormsXml
+﻿namespace FormsXML
 {
 	partial class Form1
 	{
@@ -30,84 +30,73 @@
 		{
 			labelSerie = new Label();
 			labelCompetencia = new Label();
-			txtBoxSerie = new TextBox();
-			txtBoxCompetencia = new TextBox();
-			btnBuscar = new Button();
-			label1 = new Label();
+			btn_Buscar = new Button();
+			textBoxSerie = new TextBox();
+			textBoxCompetencia = new TextBox();
 			SuspendLayout();
 			// 
 			// labelSerie
 			// 
 			labelSerie.AutoSize = true;
-			labelSerie.Font = new Font("Arial Black", 13.8F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-			labelSerie.Location = new Point(163, 21);
+			labelSerie.Font = new Font("Arial Rounded MT Bold", 16.2F, FontStyle.Italic, GraphicsUnit.Point, 0);
+			labelSerie.ForeColor = Color.WhiteSmoke;
+			labelSerie.Location = new Point(230, 54);
 			labelSerie.Name = "labelSerie";
-			labelSerie.Size = new Size(79, 32);
+			labelSerie.Size = new Size(100, 32);
 			labelSerie.TabIndex = 0;
-			labelSerie.Text = "Serie";
+			labelSerie.Text = "SERIE";
 			// 
 			// labelCompetencia
 			// 
 			labelCompetencia.AutoSize = true;
-			labelCompetencia.Font = new Font("Arial Black", 13.8F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-			labelCompetencia.Location = new Point(123, 103);
+			labelCompetencia.Font = new Font("Arial Rounded MT Bold", 16.2F, FontStyle.Italic, GraphicsUnit.Point, 0);
+			labelCompetencia.ForeColor = Color.WhiteSmoke;
+			labelCompetencia.Location = new Point(176, 146);
 			labelCompetencia.Name = "labelCompetencia";
-			labelCompetencia.Size = new Size(178, 32);
+			labelCompetencia.Size = new Size(226, 32);
 			labelCompetencia.TabIndex = 1;
-			labelCompetencia.Text = "Competencia";
+			labelCompetencia.Text = "COMPETENCIA";
 			// 
-			// txtBoxSerie
+			// btn_Buscar
 			// 
-			txtBoxSerie.BackColor = Color.DarkGray;
-			txtBoxSerie.BorderStyle = BorderStyle.FixedSingle;
-			txtBoxSerie.Location = new Point(117, 56);
-			txtBoxSerie.Name = "txtBoxSerie";
-			txtBoxSerie.Size = new Size(184, 27);
-			txtBoxSerie.TabIndex = 2;
+			btn_Buscar.BackColor = Color.Gray;
+			btn_Buscar.Cursor = Cursors.Hand;
+			btn_Buscar.Font = new Font("Segoe UI Black", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+			btn_Buscar.ForeColor = Color.WhiteSmoke;
+			btn_Buscar.Location = new Point(230, 249);
+			btn_Buscar.Name = "btn_Buscar";
+			btn_Buscar.Size = new Size(112, 44);
+			btn_Buscar.TabIndex = 2;
+			btn_Buscar.Text = "Buscar";
+			btn_Buscar.UseVisualStyleBackColor = false;
+			btn_Buscar.Click += btn_Buscar_Click;
 			// 
-			// txtBoxCompetencia
+			// textBoxSerie
 			// 
-			txtBoxCompetencia.BackColor = Color.DarkGray;
-			txtBoxCompetencia.BorderStyle = BorderStyle.FixedSingle;
-			txtBoxCompetencia.Location = new Point(117, 138);
-			txtBoxCompetencia.Name = "txtBoxCompetencia";
-			txtBoxCompetencia.Size = new Size(184, 27);
-			txtBoxCompetencia.TabIndex = 3;
+			textBoxSerie.Location = new Point(193, 89);
+			textBoxSerie.Name = "textBoxSerie";
+			textBoxSerie.Size = new Size(194, 27);
+			textBoxSerie.TabIndex = 3;
 			// 
-			// btnBuscar
+			// textBoxCompetencia
 			// 
-			btnBuscar.BackColor = Color.Transparent;
-			btnBuscar.Font = new Font("Arial Black", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
-			btnBuscar.ForeColor = SystemColors.ActiveCaptionText;
-			btnBuscar.Location = new Point(132, 188);
-			btnBuscar.Name = "btnBuscar";
-			btnBuscar.Size = new Size(158, 42);
-			btnBuscar.TabIndex = 4;
-			btnBuscar.Text = "Buscar";
-			btnBuscar.UseVisualStyleBackColor = false;
-			btnBuscar.Click += btnBuscar_Click;
-			// 
-			// label1
-			// 
-			label1.AutoSize = true;
-			label1.Location = new Point(168, 278);
-			label1.Name = "label1";
-			label1.Size = new Size(0, 20);
-			label1.TabIndex = 5;
+			textBoxCompetencia.Location = new Point(193, 192);
+			textBoxCompetencia.Name = "textBoxCompetencia";
+			textBoxCompetencia.Size = new Size(194, 27);
+			textBoxCompetencia.TabIndex = 4;
 			// 
 			// Form1
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
-			BackColor = Color.FromArgb(64, 64, 64);
-			ClientSize = new Size(417, 450);
-			Controls.Add(label1);
-			Controls.Add(btnBuscar);
-			Controls.Add(txtBoxCompetencia);
-			Controls.Add(txtBoxSerie);
+			BackColor = Color.DimGray;
+			ClientSize = new Size(566, 384);
+			Controls.Add(textBoxCompetencia);
+			Controls.Add(textBoxSerie);
+			Controls.Add(btn_Buscar);
 			Controls.Add(labelCompetencia);
 			Controls.Add(labelSerie);
-			ForeColor = SystemColors.ButtonHighlight;
+			ForeColor = Color.Black;
 			Name = "Form1";
 			Text = "Form1";
 			ResumeLayout(false);
@@ -118,9 +107,8 @@
 
 		private Label labelSerie;
 		private Label labelCompetencia;
-		private TextBox txtBoxSerie;
-		private TextBox txtBoxCompetencia;
-		private Button btnBuscar;
-		private Label label1;
+		private Button btn_Buscar;
+		private TextBox textBoxSerie;
+		private TextBox textBoxCompetencia;
 	}
 }
