@@ -21,16 +21,16 @@ namespace LeitorXML.LeitorXml
 
             nota.Arquivo = Path.GetFileName(caminho);
 
-            string id = infNFe.Attribute("Id").Value;
+            string id = infNFe.Attribute("Id")?.Value ?? "";
 
             if (id.StartsWith("NFe"))
                 id = id.Substring(3);
 
             nota.Chave = id;
 
-            XElement ide = infNFe.Element(ns + "ide");
-            XElement total = infNFe.Element(ns + "total").Element(ns + "ICMSTot");
-            XElement dest = infNFe.Element(ns + "dest");
+            XElement ide = infNFe?.Element(ns + "ide");
+            XElement total = infNFe?.Element(ns + "total").Element(ns + "ICMSTot");
+            XElement dest = infNFe?.Element(ns + "dest");
 
             nota.NumeroNF = ide.Element(ns + "nNF")?.Value;
             nota.Modelo = ide.Element(ns + "mod")?.Value;
@@ -43,7 +43,9 @@ namespace LeitorXML.LeitorXml
             else
                 nota.Competencia = "";
 
-            nota.Valor = Convert.ToDecimal(total.Element(ns + "vNF")?.Value, CultureInfo.InvariantCulture);
+            decimal.TryParse(total?.Element(ns + "vNF")?.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal valor);
+            nota.Valor = valor;
+
             nota.CpfDest = dest?.Element(ns + "CPF")?.Value;
             nota.CnpjDest = dest?.Element(ns + "CNPJ")?.Value;
 
