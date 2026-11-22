@@ -1,4 +1,4 @@
-﻿using LeitorXML.LeitorXml;
+using LeitorXML.LeitorXml;
 using System.Diagnostics;
 using System.Text.Json;
 using Xunit;
@@ -10,7 +10,7 @@ public class ProcessadorNfceTestes
     [Fact]
     public void Deve_Processar_Lote_De_Mil_Notas_Sem_Internet_E_Gerar_Json()
     {
-        string pastaTeste = @"C:\XmlNfce\Teste1000";
+        string pastaTeste = Path.Combine(Path.GetTempPath(), $"XmlTeste_{Guid.NewGuid()}");
         Directory.CreateDirectory(pastaTeste);
 
         try
@@ -75,10 +75,10 @@ public class ProcessadorNfceTestes
         }
         finally
         {
-            //if (Directory.Exists(pastaTeste))
-            //{
-            //    Directory.Delete(pastaTeste, recursive: true);
-            //}
+            if (Directory.Exists(pastaTeste))
+            {
+                Directory.Delete(pastaTeste, recursive: true);
+            }
         }
     }
 }
