@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="FormsXml/FormsXml.csproj" DisplayName="FormsXML" Id="ede9ae82-9402-4129-8cf3-36a3b42b0f55" />
   <Project Path="LeitorXML/LeitorXML.csproj" />
+  <Project Path="XML.Testes/XML.Testes.csproj" />
 </Solution>
