@@ -59,7 +59,7 @@ namespace LeitorXML.LeitorXml
                 try
                 {
                     // Reaproveita a leitura existente sem modificar LeitorXml ou NotaFiscal
-                    NotaFiscal nota = LeitorXml.Ler(arquivoXml);
+                    NotaFiscal? nota = LeitorXml.Ler(arquivoXml);
 
                     if (nota == null)
                     {

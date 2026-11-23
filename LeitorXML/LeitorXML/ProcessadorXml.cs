@@ -21,7 +21,7 @@ namespace LeitorXML.LeitorXml
 
 				try
 				{
-					NotaFiscal nota = LeitorXml.Ler(arquivoXml);
+					NotaFiscal? nota = LeitorXml.Ler(arquivoXml);
 
 					if (nota == null)
 					{

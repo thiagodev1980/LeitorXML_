@@ -8,11 +8,11 @@ namespace LeitorXML.LeitorXml
     {
         static XNamespace ns = "http://www.portalfiscal.inf.br/nfe";
 
-        public static NotaFiscal Ler(string caminho)
+        public static NotaFiscal? Ler(string caminho)
         {
             XDocument doc = XDocument.Load(caminho);
 
-            XElement infNFe = doc.Descendants(ns + "infNFe").FirstOrDefault();
+            XElement? infNFe = doc.Descendants(ns + "infNFe").FirstOrDefault();
 
             if (infNFe == null)
                 return null;
@@ -28,15 +28,15 @@ namespace LeitorXML.LeitorXml
 
             nota.Chave = id;
 
-            XElement ide = infNFe?.Element(ns + "ide");
-            XElement total = infNFe?.Element(ns + "total").Element(ns + "ICMSTot");
-            XElement dest = infNFe?.Element(ns + "dest");
+            XElement? ide = infNFe.Element(ns + "ide");
+            XElement? total = infNFe.Element(ns + "total")?.Element(ns + "ICMSTot");
+            XElement? dest = infNFe.Element(ns + "dest");
 
-            nota.NumeroNF = ide.Element(ns + "nNF")?.Value;
-            nota.Modelo = ide.Element(ns + "mod")?.Value;
-            nota.Serie = ide.Element(ns + "serie")?.Value;
+            nota.NumeroNF = ide?.Element(ns + "nNF")?.Value ?? "";
+            nota.Modelo = ide?.Element(ns + "mod")?.Value ?? "";
+            nota.Serie = ide?.Element(ns + "serie")?.Value ?? "";
 
-            string dhEmi = ide.Element(ns + "dhEmi")?.Value ?? "";
+            string dhEmi = ide?.Element(ns + "dhEmi")?.Value ?? "";
 
             if (dhEmi.Length >= 7)
                 nota.Competencia = dhEmi.Substring(0, 7);
