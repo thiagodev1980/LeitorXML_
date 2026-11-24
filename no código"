@@ -1,0 +1,6 @@
+ LeitorXML/FormsXml/Form1.cs                                 |  1 [32m+[m
+ LeitorXML/LeitorXML/LeitorXml/IProcessadorNfce.cs           |  1 [32m+[m
+ LeitorXML/LeitorXML/LeitorXml/Leitor.cs                     |  7 [32m+++++++[m
+ LeitorXML/LeitorXML/LeitorXml/NotaFiscal.cs                 |  5 [32m++++[m[31m-[m
+ LeitorXML/LeitorXML/LeitorXml/ProcessadorNfceAutorizadas.cs | 12 [32m+++++++++++[m[31m-[m
+ 5 files changed, 24 insertions(+), 2 deletions(-)

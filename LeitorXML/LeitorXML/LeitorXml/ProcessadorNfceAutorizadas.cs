@@ -11,6 +11,7 @@ namespace LeitorXML.LeitorXml
         private static readonly XNamespace Ns = "http://www.portalfiscal.inf.br/nfe";
         private readonly string _pasta;
 
+        // se não passar a pasta, usa a C:\XmlNfce
         public ProcessadorNfceAutorizadas(string pasta = @"C:\XmlNfce")
         {
             _pasta = pasta;
@@ -21,12 +22,14 @@ namespace LeitorXML.LeitorXml
             serie = (serie ?? "").Trim();
             competencia = (competencia ?? "").Trim();
 
+            // a competência tem que vir no formato 2026-01
             if (!DateTime.TryParseExact(competencia, "yyyy-MM", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dataCompetencia))
             {
                 Console.WriteLine($"Competência inválida ({competencia}). Use o formato AAAA-MM (ex: 2026-01).");
                 return;
             }
 
+            // pega os XMLs da pasta, tratando pasta que não existe ou sem permissão
             string[] arquivos;
             try
             {
@@ -49,6 +52,7 @@ namespace LeitorXML.LeitorXml
                 return;
             }
 
+            // lista que vira o envio.json, e a competência já no formato 01/2026
             List<object> envio = new List<object>();
             string anoMesFormatado = dataCompetencia.ToString("MM/yyyy", CultureInfo.InvariantCulture);
 
@@ -58,7 +62,7 @@ namespace LeitorXML.LeitorXml
 
                 try
                 {
-                    // Reaproveita a leitura existente sem modificar LeitorXml ou NotaFiscal
+                    // usa o leitor que já existia
                     NotaFiscal? nota = LeitorXml.Ler(arquivoXml);
 
                     if (nota == null)
@@ -69,6 +73,7 @@ namespace LeitorXML.LeitorXml
 
                     string? cStat = LerStatusProtocolo(arquivoXml);
 
+                    // regras do desafio: NFC-e, série e competência certas e sem CPF/CNPJ
                     bool regrasBasicas =
                         nota.Modelo == "65" &&
                         nota.Serie == serie &&
@@ -76,12 +81,14 @@ namespace LeitorXML.LeitorXml
                         string.IsNullOrWhiteSpace(nota.CpfDest) &&
                         string.IsNullOrWhiteSpace(nota.CnpjDest);
 
+                    // 100 = nota autorizada pela Sefaz
                     bool notaAutorizada = cStat == "100";
 
                     if (regrasBasicas && notaAutorizada)
                     {
                         Console.WriteLine($"SELECIONADA: {nota.Arquivo} (NF {nota.NumeroNF}) | serie {nota.Serie} | modelo {nota.Modelo} | {anoMesFormatado} | cStat {cStat}");
 
+                        // só os campos que as diretrizes pedem
                         envio.Add(new
                         {
                             chave = nota.Chave,
@@ -95,6 +102,7 @@ namespace LeitorXML.LeitorXml
                         Console.WriteLine($"descartada: {nota.Arquivo} (NF {nota.NumeroNF} | serie {nota.Serie} | cStat {cStat ?? "N/A"})");
                     }
                 }
+                // se um arquivo der problema, avisa e segue para o próximo
                 catch (XmlException)
                 {
                     Console.WriteLine($"erro: {nomeArquivo} está corrompido ou não é um XML válido");
@@ -105,6 +113,7 @@ namespace LeitorXML.LeitorXml
                 }
             }
 
+            // grava o envio.json na mesma pasta dos XMLs
             string caminhoJson = Path.Combine(_pasta, "envio.json");
 
             try
@@ -125,6 +134,7 @@ namespace LeitorXML.LeitorXml
             }
         }
 
+        // lê o cStat dentro do protNFe, que é o status que a Sefaz devolveu
         private static string? LerStatusProtocolo(string caminho)
         {
             XDocument doc = XDocument.Load(caminho);

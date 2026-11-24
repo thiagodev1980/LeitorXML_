@@ -187,6 +187,7 @@ namespace FormsXml
 			return notas.Count;
 		}
 
+		// botões para abrir o json, o log e a pasta
 		private void btnAbrirJson_Click(object sender, EventArgs e)
 		{
 			AbrirNoBlocoDeNotas(Path.Combine(pasta, "envio.json"));
